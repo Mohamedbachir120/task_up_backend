@@ -10,7 +10,7 @@ use App\Models\Project;
 class Departement extends Model
 {
     use HasFactory;
-    protected $fillable = ["name"];
+    protected $fillable = ["name","direction_id"];
 
     public function users()
     {

@@ -23,7 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone_number'
+        "structurable_type",
+        "structurable_id"
     ];
     public function structurable()
     {
