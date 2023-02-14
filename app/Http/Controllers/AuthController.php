@@ -7,6 +7,7 @@ use DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -38,7 +39,9 @@ class AuthController extends Controller
                 'structurable_type'=>"App\Models\Departement",
                 "structurable_id"=>$request["departement"]
             ]);
-
+            $user->role_id = 1;
+            $user->save();
+           
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
@@ -103,6 +106,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+   
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
 
@@ -118,9 +122,12 @@ class AuthController extends Controller
             'message' => 'User Logged In Successfully',
             'id'=> $user->id,
             "name"=>$user->name,
+            "role"=>$user->role->name,
             'token' => $user->createToken("API TOKEN")->plainTextToken
         ], 200);
     }
+
+    
     public function update_password(Request $request){
         $token = DB::table('personal_access_tokens')->where("id",explode("|",$request->bearerToken())[0])->first();    
         $user =  User::find($token->tokenable_id);
