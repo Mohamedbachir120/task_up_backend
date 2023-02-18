@@ -13,27 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('sub_tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->datetime('start_date');
             $table->datetime('end_date');
             $table->datetime('finished_at');
-
             $table->string('status')->default("À FAIRE");
             $table->text("description")->nullable();
-            $table->unsignedBigInteger('project_id');
-            $table->unsignedBigInteger('dependance_id')->nullable();
 
-            $table->foreign('dependance_id')->references('id')->on('tasks')
+            $table->unsignedBigInteger('task_id')->nullable();
+
+            $table->foreign('task_id')->references('id')->on('tasks')
             ->onDelete('cascade');
-
-            $table->foreign('project_id')->references('id')->on('projects')
-            ->onDelete('cascade');
-
-            
-
-
             $table->timestamps();
         });
     }
@@ -45,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('sub_tasks');
     }
 };

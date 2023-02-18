@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Departement;
+use App\Models\SubTask;
 use Illuminate\Http\Request;
 
-class DepartementController extends Controller
+class SubTaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        return response()->json(Departement::with('direction')->get(),200);
+        //
     }
 
     /**
@@ -41,10 +41,10 @@ class DepartementController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Departement  $departement
+     * @param  \App\Models\SubTask  $subTask
      * @return \Illuminate\Http\Response
      */
-    public function show(Departement $departement)
+    public function show(SubTask $subTask)
     {
         //
     }
@@ -52,10 +52,10 @@ class DepartementController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Departement  $departement
+     * @param  \App\Models\SubTask  $subTask
      * @return \Illuminate\Http\Response
      */
-    public function edit(Departement $departement)
+    public function edit(SubTask $subTask)
     {
         //
     }
@@ -64,10 +64,10 @@ class DepartementController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Departement  $departement
+     * @param  \App\Models\SubTask  $subTask
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Departement $departement)
+    public function update(Request $request, SubTask $subTask)
     {
         //
     }
@@ -75,10 +75,10 @@ class DepartementController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Departement  $departement
+     * @param  \App\Models\SubTask  $subTask
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Departement $departement)
+    public function destroy(SubTask $subTask)
     {
         //
     }
