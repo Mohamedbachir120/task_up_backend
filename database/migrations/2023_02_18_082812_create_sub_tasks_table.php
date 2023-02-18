@@ -16,11 +16,8 @@ return new class extends Migration
         Schema::create('sub_tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->datetime('start_date');
-            $table->datetime('end_date');
-            $table->datetime('finished_at');
+          
             $table->string('status')->default("À FAIRE");
-            $table->text("description")->nullable();
 
             $table->unsignedBigInteger('task_id')->nullable();
 

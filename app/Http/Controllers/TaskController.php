@@ -25,6 +25,7 @@ class TaskController extends Controller
     public function create()
     {
         //
+
     }
 
     /**
@@ -34,8 +35,9 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
+    {   
+        $task = Task::create($request->all());
+        return response()->json(["success"=>true,"message"=>"Task created successfully"],200);
     }
 
     /**

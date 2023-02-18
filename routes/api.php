@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 
     
 use App\Http\Controllers\DepartementController;
+use App\Http\Controllers\TaskController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,13 +32,13 @@ Route::post('/auth/refresh',[AuthController::class,'refresh']);
 
 Route::get('/departements',[DepartementController::class,'index']);
 
-// Route::controller(DepartementController::class)->middleware('auth:sanctum')->group(function(){
+Route::controller(TaskController::class)->middleware('auth:sanctum')->group(function(){
 
-//     Route::get('/affectation_access','index');
-//     Route::post('/affectation_access','store');
-//     Route::get('/affectation_access/{id}','show');
-//     Route::post('/affectation_access/{id}','update');
-//     Route::delete('/affectation_access/{id}','destroy');
+    // Route::get('/affectation_access','index');
+     Route::post('/task','store');
+    // Route::get('/affectation_access/{id}','show');
+    // Route::post('/affectation_access/{id}','update');
+    // Route::delete('/affectation_access/{id}','destroy');
 
 
-// });
+});

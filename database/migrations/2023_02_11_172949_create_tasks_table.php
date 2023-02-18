@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('title');
             $table->datetime('start_date');
             $table->datetime('end_date');
-            $table->datetime('finished_at');
+            $table->datetime('finished_at')->nullable();
 
             $table->string('status')->default("À FAIRE");
             $table->text("description")->nullable();
-            $table->unsignedBigInteger('project_id');
+            $table->unsignedBigInteger('project_id')->nullable();
             $table->unsignedBigInteger('dependance_id')->nullable();
 
             $table->foreign('dependance_id')->references('id')->on('tasks')
@@ -30,9 +30,6 @@ return new class extends Migration
 
             $table->foreign('project_id')->references('id')->on('projects')
             ->onDelete('cascade');
-
-            
-
 
             $table->timestamps();
         });

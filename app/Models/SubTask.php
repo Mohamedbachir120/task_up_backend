@@ -9,7 +9,7 @@ use App\Models\Task;
 class SubTask extends Model
 {
     use HasFactory;
-    protected $fillable = ["title","start_date","finished_at","end_date","status","description"];
+    protected $fillable = ["title","status","task_id"];
 
     public  function task(){
         return $this->belongsTo(Task::class);
