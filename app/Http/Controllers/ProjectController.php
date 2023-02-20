@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class ProjectController extends Controller
 {
@@ -14,7 +16,14 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        
+    }
+    public function department_projects()
+    {
+        $departement = Auth::user()->structurable;
+
+        return response()->json(["data"=>$departement->projects],200);
+        
     }
 
     /**

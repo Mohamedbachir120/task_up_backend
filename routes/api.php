@@ -7,7 +7,7 @@ use App\Http\Controllers\AuthController;
     
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\TaskController;
-
+use App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,4 +41,8 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
     // Route::delete('/affectation_access/{id}','destroy');
 
 
+});
+Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(function(){
+
+    Route::get("/department_projects","department_projects");
 });
