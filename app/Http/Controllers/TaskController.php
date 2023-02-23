@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class TaskController extends Controller
 {
@@ -15,6 +17,17 @@ class TaskController extends Controller
     public function index()
     {
         //
+    }
+    public function fetch_initial_data(Request $request){
+        $departement = Auth::user()->structurable;
+        $users = $departement->users;
+        $tasks = DB::table('tasks')
+                ->join('projects','projects.id','=','tasks.id')
+                ->where('projects.departement_id','=',$departement->id)
+                ->whereIn('tasks.status',array('À FAIRE','EN RETARD'))
+                ->select('tasks.*')
+                ->get();
+        return response()->json(["projects"=>$departement->projects],200);
     }
 
     /**
