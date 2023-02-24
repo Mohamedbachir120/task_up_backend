@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_task', function (Blueprint $table) {
+        Schema::create('task_user', function (Blueprint $table) {
             
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
@@ -33,7 +33,7 @@ return new class extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('user_task');
+        Schema::dropIfExists('task_user');
 
     }
 };

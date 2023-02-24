@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
+use Carbon\Carbon;
+use App\Models\SubTask;
 
 class TaskController extends Controller
 {
@@ -22,12 +24,14 @@ class TaskController extends Controller
         $departement = Auth::user()->structurable;
         $users = $departement->users;
         $tasks = DB::table('tasks')
-                ->join('projects','projects.id','=','tasks.id')
-                ->where('projects.departement_id','=',$departement->id)
+                ->join('task_user','task_user.task_id','=','tasks.id')
+                ->join('users','users.id','=','task_user.user_id')
+                ->where('users.structurable_id',$departement->id)
                 ->whereIn('tasks.status',array('À FAIRE','EN RETARD'))
                 ->select('tasks.*')
+                ->distinct()
                 ->get();
-        return response()->json(["projects"=>$departement->projects],200);
+        return response()->json(["projects"=>$departement->projects,"users"=>$users,"tasks"=>$tasks],200);
     }
 
     /**
@@ -48,8 +52,29 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
-        $task = Task::create($request->all());
+    {  
+        $task = Task::create([
+            "title"=>$request["title"],
+            "start_date"=>Carbon::now(),
+            "end_date"=>$request["end_date"],
+            "dependance_id"=>$request["dependance_id"],
+            "project_id"=>$request["project_id"],
+            "description"=>$request["description"],
+
+        ]);
+        $task->save();
+
+        $task->users()->sync($request["users"]);
+         
+        $data = [];
+        $data = array_map(function ($e) use ($task){
+            return ["title"=>$e,"task_id"=>$task->id];
+        },$request["sub_tasks"]);
+
+        SubTask::insert($data);
+        
+
+
         return response()->json(["success"=>true,"message"=>"Task created successfully"],200);
     }
 
