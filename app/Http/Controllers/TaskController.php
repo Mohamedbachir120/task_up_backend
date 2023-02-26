@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 use Carbon\Carbon;
 use App\Models\SubTask;
+use Illuminate\Support\Facades\Http;
+
 
 class TaskController extends Controller
 {
@@ -63,6 +65,11 @@ class TaskController extends Controller
 
         ]);
         $task->save();
+        $response = Http::post(env('SOCKET_SERVER')."/send_notification", [
+            'id' => '6',
+            'message' => 'What saap',
+        ]);
+
 
         $task->users()->sync($request["users"]);
          

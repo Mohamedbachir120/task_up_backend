@@ -12,7 +12,7 @@ io.on('connection',(socket)=>{
     console.log('connection');
     socket.on('sendNotificationToUser',(obj)=> {
         console.log(obj);
-        socket.broadcast.emit('receiveNotificationToUser',obj.message)
+        socket.broadcast.emit('receiveNotificationToUser'+obj.user,obj.message)
     })
     socket.on('disconnect',(socket)=>{
 
