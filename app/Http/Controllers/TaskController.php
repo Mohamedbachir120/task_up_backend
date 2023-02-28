@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 use Carbon\Carbon;
 use App\Models\SubTask;
-use Illuminate\Support\Facades\Http;
-
+use App\Events\TaskAffected;
+use App\Models\Project;
 
 class TaskController extends Controller
 {
@@ -65,13 +65,19 @@ class TaskController extends Controller
 
         ]);
         $task->save();
-        $response = Http::post(env('SOCKET_SERVER')."/send_notification", [
-            'id' => '6',
-            'message' => 'What saap',
-        ]);
+        
 
 
         $task->users()->sync($request["users"]);
+        $project = Project::find($request["project_id"]);
+        $users = array_diff($request["users"],[Auth::user()->id]);
+        $creator = Auth::user()->name;
+
+        foreach($users as $user){
+            
+            TaskAffected::dispatch($user,"Nouvelle tâche","Une nouvelle tâche vous a été affectée par ".$creator." dans le projet ".$project->name);
+           
+        }
          
         $data = [];
         $data = array_map(function ($e) use ($task){

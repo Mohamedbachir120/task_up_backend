@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Task; 
 use App\Models\Role;
+use App\Models\Alert;
 
 class User extends Authenticatable
 {
@@ -35,6 +36,10 @@ class User extends Authenticatable
     }
     public function role(){
         return $this->belongsTo(Role::class);
+    }
+
+    public function alerts(){
+        return $this->hasMany(Alert::class);
     }
     /**
      * The attributes that should be hidden for serialization.
