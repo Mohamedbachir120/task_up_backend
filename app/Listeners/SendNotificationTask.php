@@ -6,7 +6,7 @@ use App\Events\TaskAffected;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Http;
-
+use App\Models\Alert;
 
 class SendNotificationTask
 {
@@ -28,6 +28,7 @@ class SendNotificationTask
      */
     public function handle(TaskAffected $event)
     {
+        $task = Alert::create(["title"=>$event->title,"message"=>$event->message,"user_id"=>$event->user_id]);
 
         $response = Http::post(env('SOCKET_SERVER')."/send_notification", [
             'id' => strval($event->user_id),
@@ -35,6 +36,7 @@ class SendNotificationTask
             'message' => $event->message,
         ]);
 
-        $task = Task::create(["title"=>$event->title,"message"=>$event->message]);
+        return 0;
+
     }
 }

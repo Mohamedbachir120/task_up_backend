@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\SubTask;
+use App\Models\ScheduledAlert;
 
 class Task extends Model
 {
@@ -25,5 +26,10 @@ class Task extends Model
     }
     public function sub_tasks(){
         return $this->hasMany(SubTask::class);
+    }
+
+    public function scheduled_alerts(){
+
+        return $this->hasMany(ScheduledAlert::class);
     }
 }

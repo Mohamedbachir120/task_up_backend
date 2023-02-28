@@ -11,6 +11,8 @@ use App\Models\SubTask;
 use App\Events\TaskAffected;
 use App\Models\Project;
 
+use App\Models\ScheduledAlert;
+
 class TaskController extends Controller
 {
     /**
@@ -57,7 +59,7 @@ class TaskController extends Controller
     {  
         $task = Task::create([
             "title"=>$request["title"],
-            "start_date"=>Carbon::now(),
+            "start_date"=>Carbon::now("GMT+1"),
             "end_date"=>$request["end_date"],
             "dependance_id"=>$request["dependance_id"],
             "project_id"=>$request["project_id"],
@@ -66,10 +68,25 @@ class TaskController extends Controller
         ]);
         $task->save();
         
-
-
         $task->users()->sync($request["users"]);
         $project = Project::find($request["project_id"]);
+        
+
+        // scheduling prevention and time over for tasks     
+
+        $over_time = new Carbon($request["end_date"]);
+        $over_time = $over_time->addHour();
+
+        $prevention_time = new Carbon($request["end_date"]);
+        $prevention_time = $prevention_time->subHour();
+
+        ScheduledAlert::create(['destination'=>implode(",",$request["users"]),"send_time"=>$over_time,"task_id"=>$task->id]);    
+        ScheduledAlert::create(['destination'=>implode(",",$request["users"]),"send_time"=>$prevention_time,"task_id"=>$task->id]);    
+        
+
+        // send live notification to users  except for the owner 
+
+
         $users = array_diff($request["users"],[Auth::user()->id]);
         $creator = Auth::user()->name;
 
@@ -78,7 +95,10 @@ class TaskController extends Controller
             TaskAffected::dispatch($user,"Nouvelle tâche","Une nouvelle tâche vous a été affectée par ".$creator." dans le projet ".$project->name);
            
         }
-         
+
+
+        // inserting subtask 
+
         $data = [];
         $data = array_map(function ($e) use ($task){
             return ["title"=>$e,"task_id"=>$task->id];

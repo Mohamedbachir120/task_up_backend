@@ -8,7 +8,7 @@ use App\Models\User;
 class Alert extends Model
 {
     use HasFactory;
-    protected $fillable = ["title","message","seen"];
+    protected $fillable = ["title","message","seen","user_id"];
 
     public function user(){
         return $this->belongsTo(User::class);
