@@ -20,9 +20,15 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function index(Request $request)
+    {   
+        $finished = Auth::user()->tasks()->where('status','TERMINÉ')->with('project','users','sub_tasks')->get();
+        $late = Auth::user()->tasks()->where('status','EN RETARD')->with('project','users','sub_tasks')->get();
+        $todo = Auth::user()->tasks()->where('status','À FAIRE')->with('project','users','sub_tasks')->get();
+
+        return response()->json(["finished" => $finished, "late" => $late, "todo"=>$todo],200);
+
+
     }
     public function fetch_initial_data(Request $request){
         $departement = Auth::user()->structurable;
@@ -106,8 +112,6 @@ class TaskController extends Controller
 
         SubTask::insert($data);
         
-
-
         return response()->json(["success"=>true,"message"=>"Task created successfully"],200);
     }
 

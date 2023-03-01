@@ -37,6 +37,8 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
     // Route::get('/affectation_access','index');
      Route::post('/task','store');
      Route::get('/fetch_initial_data','fetch_initial_data');
+     Route::get('/tasks','index');
+
     // Route::get('/affectation_access/{id}','show');
     // Route::post('/affectation_access/{id}','update');
     // Route::delete('/affectation_access/{id}','destroy');
