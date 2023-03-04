@@ -114,7 +114,59 @@ class TaskController extends Controller
         
         return response()->json(["success"=>true,"message"=>"Task created successfully"],200);
     }
+    public function assign_sub_task(Request $request,$id){
 
+        SubTask::create(['title'=>$request["title"],"task_id"=>$id]);
+        
+        return response()->json(["success"=>true,"message"=>"sous tâche ajouté avec succès"]);
+    }
+
+
+    public function mark_as_finished(Request $request,$id){
+
+        $task = Task::find($id);
+
+        $task->status = "TERMINÉ";
+
+        $task->save();
+        
+        return response()->json(["success"=>true,"message"=>"Task marked as finished"],200);
+
+
+    }
+    public function delete(Request $request,$id){
+        $task = Task::find($id)->delete();
+        return response()->json(["success"=>true,"message"=>"Task deleted successfully"],200);
+
+    }
+    public function getDayTasks(Request $request){
+        $today = new Carbon($request["date"]);
+        $tomorrow = new Carbon($request["date"]);
+
+        $today = $today->isoFormat("YYYY-MM-DD 00:00:00");
+        $tomorrow = $tomorrow->isoFormat("YYYY-MM-DD 23:59:59");
+
+       $tasks =  Auth::user()->tasks()->whereBetween('end_date',[$today,$tomorrow])
+                ->with('project','users','sub_tasks')->get();
+       return response()->json(["tasks"=>$tasks],200);
+    }
+    function getTaskDate(Request $request){
+        $date = Task::where('title','like','%'.$request['keyword'].'%')->pluck('end_date')->first();
+        return response()->json(['date'=>$date],200); 
+    }
+    function generate_report(Request $request){
+        $today = new Carbon($request["date"]);
+
+        $today = $today->isoFormat("YYYY-MM-01 00:00:00");
+        $tomorrow = new Carbon($today);
+        $tomorrow = $tomorrow->addMonth()->isoFormat('YYYY-MM-DD 00:00:00');
+
+        $tasks = Auth::user()->tasks()->whereBetween('end_date',[$today,$tomorrow])->with('project')->orderBy('project_id')->get();
+
+
+        return response()->json(["tasks"=>$tasks]);
+
+    }
     /**
      * Display the specified resource.
      *

@@ -38,6 +38,12 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::post('/task','store');
      Route::get('/fetch_initial_data','fetch_initial_data');
      Route::get('/tasks','index');
+     Route::post('/assign_sub_task/{id}','assign_sub_task');
+     Route::post('/mark_as_finished/{id}','mark_as_finished');
+     Route::get('/get_day_tasks','getDayTasks');
+     Route::get('/get_task_date','getTaskDate');
+     Route::delete('/delete/{id}','delete');
+     Route::get('/generate_report','generate_report');
 
     // Route::get('/affectation_access/{id}','show');
     // Route::post('/affectation_access/{id}','update');
