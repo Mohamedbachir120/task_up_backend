@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\Task; 
 use App\Models\Role;
 use App\Models\Alert;
+use App\Models\Document;
 
 class User extends Authenticatable
 {
@@ -59,4 +60,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function documents(){
+        return $this->hasMany(Document::class);
+    }
 }

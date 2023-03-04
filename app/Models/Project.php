@@ -9,7 +9,7 @@ use App\Models\Task;
 class Project extends Model
 {
     use HasFactory;
-    protected $fillable = ["name","description"];
+    protected $fillable = ["name","description","departement_id"];
 
     public function departement(){
 

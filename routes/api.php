@@ -43,7 +43,8 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::get('/get_day_tasks','getDayTasks');
      Route::get('/get_task_date','getTaskDate');
      Route::delete('/delete/{id}','delete');
-     Route::get('/generate_report','generate_report');
+     Route::post('/generate_report','generate_report');
+     Route::get('/rapports','rapports');
 
     // Route::get('/affectation_access/{id}','show');
     // Route::post('/affectation_access/{id}','update');
@@ -54,4 +55,5 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
 Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(function(){
 
     Route::get("/department_projects","department_projects");
+    Route::post('/project' ,'store');
 });
