@@ -11,7 +11,7 @@ use App\Models\ScheduledAlert;
 
 class Task extends Model
 {
-    protected $fillable = ["title","finished_at","project_id","dependance_id","start_date","end_date","status","description"];
+    protected $fillable = ["title","finished_at","priority","project_id","dependance_id","start_date","end_date","status","description"];
 
     use HasFactory;
 

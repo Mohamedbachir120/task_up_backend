@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('title');
             $table->datetime('start_date');
             $table->datetime('end_date');
+            $table->integer('priority')->default(4);
+            
             $table->datetime('finished_at')->nullable();
 
             $table->string('status')->default("À FAIRE");

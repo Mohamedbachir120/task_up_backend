@@ -74,6 +74,7 @@ class TaskController extends Controller
             "dependance_id"=>$request["dependance_id"],
             "project_id"=>$request["project_id"],
             "description"=>$request["description"],
+            "priority"=>$request["priority"]
 
         ]);
         $task->save();
