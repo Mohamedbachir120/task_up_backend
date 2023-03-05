@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use Illuminate\Http\Request;
+use Auth;
 
 class DocumentController extends Controller
 {
@@ -78,8 +79,22 @@ class DocumentController extends Controller
      * @param  \App\Models\Document  $document
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Document $document)
+    public function destroy($id)
     {
-        //
+    $document = Document::find($id);
+
+    if(Auth::user()->id == $document->user_id){
+        try {
+            //code...
+            unlink(public_path()."/".$document->url);
+            $document->delete();
+            return response()->json(["success"=>true,"message"=>"document deleted successfully"],200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["success"=>false,"message"=>"Server error"],200);
+        } 
+
+    
     }
+}
 }

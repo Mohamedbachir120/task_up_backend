@@ -8,6 +8,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\DocumentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +44,7 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::post('/mark_as_finished/{id}','mark_as_finished');
      Route::get('/get_day_tasks','getDayTasks');
      Route::get('/get_task_date','getTaskDate');
-     Route::delete('/delete/{id}','delete');
+     Route::delete('/task/{id}','delete');
      Route::post('/generate_report','generate_report');
      Route::get('/rapports','rapports');
 
@@ -51,6 +53,9 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
     // Route::delete('/affectation_access/{id}','destroy');
 
 
+});
+Route::controller(DocumentController::class)->middleware('auth:sanctum')->group(function(){
+    Route::delete('/document/{id}','destroy');
 });
 Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(function(){
 
