@@ -9,7 +9,7 @@ use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\DocumentController;
-
+use App\Http\Controllers\AlertController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +47,7 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::delete('/task/{id}','delete');
      Route::post('/generate_report','generate_report');
      Route::get('/rapports','rapports');
+     Route::get('/sub_tasks/{id}','sub_tasks');
 
     // Route::get('/affectation_access/{id}','show');
     // Route::post('/affectation_access/{id}','update');
@@ -56,6 +57,9 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
 });
 Route::controller(DocumentController::class)->middleware('auth:sanctum')->group(function(){
     Route::delete('/document/{id}','destroy');
+});
+Route::controller(AlertController::class)->middleware('auth:sanctum')->group(function(){
+    Route::get('/alert','index');
 });
 Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(function(){
 

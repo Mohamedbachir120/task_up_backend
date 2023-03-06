@@ -26,9 +26,45 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {   
-        $finished = Auth::user()->tasks()->where('status','TERMINÉ')->with('project','users','sub_tasks')->get();
-        $late = Auth::user()->tasks()->where('status','EN RETARD')->with('project','users','sub_tasks')->get();
-        $todo = Auth::user()->tasks()->where('status','À FAIRE')->with('project','users','sub_tasks')->get();
+        $finished = Auth::user()->tasks()
+        ->where('status','TERMINÉ')
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])
+        ->orderBy('priority')
+        ->get();
+     
+
+        $late = Auth::user()->tasks()
+        ->where('status','EN RETARD')  
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])->orderBy('priority')
+        ->get();
+
+        $todo = Auth::user()->tasks()
+        ->where('status','À FAIRE')
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])
+        ->orderBy('priority')
+        ->get();
+
 
         return response()->json(["finished" => $finished, "late" => $late, "todo"=>$todo],200);
 
@@ -130,7 +166,7 @@ class TaskController extends Controller
     public function mark_as_finished(Request $request,$id){
 
         $task = Task::find($id);
-
+        $task->finished_at = Carbon::now();
         $task->status = "TERMINÉ";
 
         $task->save();
@@ -207,6 +243,13 @@ class TaskController extends Controller
         return response()->json(["rapports" => $rapports],200);
     }
 
+    public function sub_tasks(Request $request,$id){
+        $task = Task::find($id);
+
+        return response()->json(['subTasks'=>$task->sub_tasks()->select('id','title')->get()],200);
+
+    
+    }
     /**
      * Display the specified resource.
      *

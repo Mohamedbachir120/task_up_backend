@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alert;
 use Illuminate\Http\Request;
-
+use Auth;
 class AlertController extends Controller
 {
     /**
@@ -12,9 +12,11 @@ class AlertController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $alerts = Auth::user()->alerts;
+
+        return response()->json(['alerts'=>$alerts]);
     }
 
     /**
