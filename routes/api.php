@@ -10,7 +10,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\AlertController;
-
+use App\Http\Controllers\ObjectifController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -60,6 +60,13 @@ Route::controller(DocumentController::class)->middleware('auth:sanctum')->group(
 });
 Route::controller(AlertController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/alert','index');
+});
+Route::controller(ObjectifController::class)->middleware('auth:sanctum')->group(function(){
+
+    Route::post('/objectif','store');
+    Route::get('/objectifs','index');
+
+
 });
 Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(function(){
 

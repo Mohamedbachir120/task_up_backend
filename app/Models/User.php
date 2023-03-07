@@ -11,6 +11,7 @@ use App\Models\Task;
 use App\Models\Role;
 use App\Models\Alert;
 use App\Models\Document;
+use App\Models\Objectif;
 
 class User extends Authenticatable
 {
@@ -41,6 +42,9 @@ class User extends Authenticatable
 
     public function alerts(){
         return $this->hasMany(Alert::class);
+    }
+    public function objectifs(){
+        return $this->hasMany(Objectif::class);
     }
     /**
      * The attributes that should be hidden for serialization.
