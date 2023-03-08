@@ -226,7 +226,14 @@ class TaskController extends Controller
 
     }
     public function delete(Request $request,$id){
-        $task = Task::find($id)->delete();
+        $task = Task::find($id);
+        $users = $task->users;
+        foreach($users as $user){
+            
+            TaskAffected::dispatch($user->id,"Suppression d'une tâche","La tâche ".$task->title." a été supprimé par ".Auth::user()->name);
+           
+        }
+        $task->delete();
         return response()->json(["success"=>true,"message"=>"Task deleted successfully"],200);
 
     }
