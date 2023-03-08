@@ -70,6 +70,56 @@ class TaskController extends Controller
 
 
     }
+    public function project_tasks(Request $request,$id)
+    {   
+        $finished = Auth::user()->tasks()
+        ->where('status','TERMINÉ')
+        ->where('project_id',$id)
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])
+        ->orderBy('priority')
+        ->get();
+     
+
+        $late = Auth::user()->tasks()
+        ->where('status','EN RETARD')  
+        ->where('project_id',$id)
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])->orderBy('priority')
+        ->get();
+
+        $todo = Auth::user()->tasks()
+        ->where('status','À FAIRE')
+        ->where('project_id',$id)
+
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])
+        ->orderBy('priority')
+        ->get();
+
+
+        return response()->json(["finished" => $finished, "late" => $late, "todo"=>$todo],200);
+
+
+    }
     public function fetch_initial_data(Request $request){
         $departement = Auth::user()->structurable;
         $users = $departement->users;
@@ -191,6 +241,19 @@ class TaskController extends Controller
                 ->with('project','users','sub_tasks')->get();
        return response()->json(["tasks"=>$tasks],200);
     }
+    public function getMonthTask(Request $request){
+        $today = new Carbon($request["date"]);
+        $tomorrow = new Carbon($request["date"]);
+
+        $today = $today->isoFormat("YYYY-MM-01 00:00:00");
+        $tomorrow = $tomorrow->addMonth();
+        $tasks = Auth::user()->tasks()
+        ->whereBetween('end_date',[$today,$tomorrow])
+        ->orderBy('end_date')
+        ->get();    
+      
+       return response()->json(["tasks"=>$tasks],200);
+    }
     function getTaskDate(Request $request){
         $date = Task::where('title','like','%'.$request['keyword'].'%')->pluck('end_date')->first();
         return response()->json(['date'=>$date],200); 
@@ -249,6 +312,47 @@ class TaskController extends Controller
         return response()->json(['subTasks'=>$task->sub_tasks()->select('id','title')->get()],200);
 
     
+    }
+
+    public function perfomances(Request $request){
+        $year_start = Carbon::now();
+        $date = $year_start->isoFormat('YYYY-01-01');
+        $year_start = new Carbon($date);
+        $month = Carbon::now();
+        $iterations =  $month->month;
+        $data_status = [
+            'À FAIRE'=> Auth::user()->tasks()->where('status','À FAIRE')->count(),
+            'EN RETARD'=> Auth::user()->tasks()->where('status','EN RETARD')->count(),
+            'TERMINÉ'=> Auth::user()->tasks()->where('status','TERMINÉ')->count(),
+
+        ];
+        
+        $data_month = [];
+        for($i=1 ; $i <= $iterations ; $i++){
+            $next = new Carbon($year_start);
+            
+            $count =  Auth::user()->tasks()
+                    ->whereBetween('end_date',[$year_start,$next->addMonth()])->count();
+            $data_month[$year_start->locale('fr')->isoFormat('MMMM')] = $count;
+            $year_start = $year_start->addMonth();
+            $next = $next->addMonth();
+
+        }
+        $departement = Auth::user()->structurable_id;
+        $data_projects = [];
+        $projects = Project::where('departement_id',$departement)->get();
+        foreach($projects as $project){
+            $data_projects[$project->name] = $project->tasks()->count();
+        }
+        return response()->json([
+            'label_data_month'=>array_keys($data_month),
+            'data_month'=>array_values($data_month),
+            'label_data_status'=>array_keys($data_status) ,
+            'data_status'=>array_values($data_status),
+            'label_data_projects'=>array_keys($data_projects),
+            'data_projects'=>array_values($data_projects) 
+        
+        ]);
     }
     /**
      * Display the specified resource.

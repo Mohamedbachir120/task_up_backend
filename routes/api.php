@@ -36,7 +36,6 @@ Route::get('/departements',[DepartementController::class,'index']);
 
 Route::controller(TaskController::class)->middleware('auth:sanctum')->group(function(){
 
-    // Route::get('/affectation_access','index');
      Route::post('/task','store');
      Route::get('/fetch_initial_data','fetch_initial_data');
      Route::get('/tasks','index');
@@ -48,10 +47,11 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::post('/generate_report','generate_report');
      Route::get('/rapports','rapports');
      Route::get('/sub_tasks/{id}','sub_tasks');
+     Route::get('/get_month_task','getMonthTask');
+     Route::get('/project_tasks/{id}','project_tasks');
+     Route::get('/perfomances','perfomances');
 
-    // Route::get('/affectation_access/{id}','show');
-    // Route::post('/affectation_access/{id}','update');
-    // Route::delete('/affectation_access/{id}','destroy');
+
 
 
 });
