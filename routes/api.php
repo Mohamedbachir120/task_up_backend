@@ -45,6 +45,7 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::get('/get_task_date','getTaskDate');
      Route::delete('/task/{id}','delete');
      Route::post('/generate_report','generate_report');
+     Route::post('/generate_departement_report','generate_departement_report');
      Route::get('/rapports','rapports');
      Route::get('/sub_tasks/{id}','sub_tasks');
      Route::get('/get_month_task','getMonthTask');

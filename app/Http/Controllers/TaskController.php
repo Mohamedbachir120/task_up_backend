@@ -308,6 +308,54 @@ class TaskController extends Controller
 
 
     }
+    function generate_departement_report(Request $request){
+
+        $today = new Carbon($request["date"]);
+        $today = $today->locale('fr');
+        $projects  = Project::where('departement_id',Auth::user()->structurable_id)->where('is_fixed',0)->get()->pluck('id'); 
+        $fixed = Project::where('departement_id',Auth::user()->structurable_id)->where('is_fixed',1)->get()->pluck('id');
+        $monthString = $today->isoFormat("MMMM"); 
+        
+        $year = $today->year;
+        $month = $today->month;
+        $document = Auth::user()->documents()->where('year',$year)->where('month',$month)->get();
+        if(count($document) == 0){
+
+            $user = Auth::user();
+            $today = $today->isoFormat("YYYY-MM-01 00:00:00");
+            $tomorrow = new Carbon($today);
+            $tomorrow = $tomorrow->addMonth()->isoFormat('YYYY-MM-DD 00:00:00');
+    
+            $original = Task::whereIn('project_id',$projects)->whereBetween('end_date',[$today,$tomorrow])->with("sub_tasks")->with('project')->orderBy('project_id')->get();
+            $fixed_tasks = Task::whereIn('project_id',$fixed)->with("sub_tasks")->with('project')->orderBy('project_id')->get();
+           
+            $tasks = $original->merge($fixed_tasks);
+            $pdf = PDF::loadView('pdf.rapport', compact('tasks','user','monthString'));
+            
+            $path = public_path()."/rapport/".$user->name.$user->id."/";
+            
+            if(!File::isDirectory($path)){
+                File::makeDirectory($path,0777,true,true);
+            }
+            $pdf->save($path.$year."-".$month.'.pdf');
+
+            Document::create([
+                            "name"=>"Rapport ".$monthString." ".$year,
+                            "url"=>"rapport/".$user->name.$user->id."/".$year."-".$month.'.pdf',
+                            "year"=>$year,
+                            "month"=>$month,
+                            "user_id"=>$user->id]);
+
+            return response()->json(['url'=> "rapport/".$user->name.$user->id."/".$year."-".$month.'.pdf'],200);
+
+        }else{
+            return response()->json(['url'=>$document[0]->url],200);
+        }
+       
+
+
+
+    }
     public function rapports(Request $request){
         $rapports = Auth::user()->documents;
         return response()->json(["rapports" => $rapports],200);

@@ -46,7 +46,8 @@ class ProjectController extends Controller
     {
         $project = Project::create([
             'name'=>$request["name"],
-            "departement_id"=> Auth::user()->structurable_id
+            "departement_id"=> Auth::user()->structurable_id,
+            "is_fixed"=>$request["is_fixed"]
         ]);
         return response()->json(["success"=>true,"message"=>"Project created successfully"],200);
     }
