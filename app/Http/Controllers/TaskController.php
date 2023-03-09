@@ -15,7 +15,7 @@ use App\Models\ScheduledAlert;
 use PDF;
 use Storage;
 use File;
-
+use App\Models\User;
 
 class TaskController extends Controller
 {
@@ -367,6 +367,98 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
+    public function TaskPerDepartment(Request $request){
+        $projects  = Project::where('departement_id',Auth::user()->structurable_id)->get()->pluck('id');
+        
+        $finished = Task::whereIn('project_id',$projects)
+        ->where('status','TERMINÉ')
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])
+        ->orderBy('priority')
+        ->get();
+     
+
+        $late = Task::whereIn('project_id',$projects)
+        ->where('status','EN RETARD')  
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])->orderBy('priority')
+        ->get();
+
+        $todo = Task::whereIn('project_id',$projects)
+        ->where('status','À FAIRE')
+        ->with([
+            'users'=>function($query){
+                $query->select('users.id','users.name');
+            },
+            'project'=>function($query){
+                $query->select('projects.id','projects.name');
+            }
+        ])
+        ->orderBy('priority')
+        ->get();
+
+
+        return response()->json(["finished" => $finished, "late" => $late, "todo"=>$todo],200);
+        
+    }
+    public function TaskPerProject(Request $request){
+        $projects  = Project::where('departement_id',Auth::user()->structurable_id)->get();
+        $data = [];
+        foreach ($projects as $project) {
+            $data[$project->name] = Task::where('project_id',$project->id)
+            ->with([
+                'users'=>function($query){
+                    $query->select('users.id','users.name');
+                },
+                'project'=>function($query){
+                    $query->select('projects.id','projects.name');
+                }
+            ])
+            ->orderBy('priority')
+            ->get();
+            # code...
+        }
+       
+
+
+        return response()->json(["data" => $data],200);
+        
+    }
+    public function TaskPerPersonne(Request $request){
+        $users  = User::where('structurable_id',Auth::user()->structurable_id)->get();
+        $data = [];
+        foreach ($users as $user) {
+            $data[$user->name] = $user->tasks()
+            ->with([
+                'users'=>function($query){
+                    $query->select('users.id','users.name');
+                },
+                'project'=>function($query){
+                    $query->select('projects.id','projects.name');
+                }
+            ])
+            ->orderBy('priority')
+            ->get();
+            # code...
+        }
+       
+
+
+        return response()->json(["data" => $data],200);
+        
+    }
     public function show(Task $task)
     {
         //

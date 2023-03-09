@@ -50,8 +50,12 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::get('/get_month_task','getMonthTask');
      Route::get('/project_tasks/{id}','project_tasks');
      Route::get('/perfomances','perfomances');
+     Route::get('/task_per_department','TaskPerDepartment')->middleware('isChefDepartment');
+     Route::get('/task_per_project','TaskPerProject')->middleware('isChefDepartment');
+     Route::get('/task_per_personne','TaskPerPersonne')->middleware('isChefDepartment');
 
 
+     
 
 
 });
