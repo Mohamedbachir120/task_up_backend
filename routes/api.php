@@ -54,7 +54,7 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::get('/task_per_department','TaskPerDepartment')->middleware('isChefDepartment');
      Route::get('/task_per_project','TaskPerProject')->middleware('isChefDepartment');
      Route::get('/task_per_personne','TaskPerPersonne')->middleware('isChefDepartment');
-
+     Route::get('/search','search');
 
      
 

@@ -282,29 +282,84 @@ class TaskController extends Controller
             $tomorrow = $tomorrow->addMonth()->isoFormat('YYYY-MM-DD 00:00:00');
     
             $tasks = $user->tasks()->whereBetween('end_date',[$today,$tomorrow])->with("sub_tasks")->with('project')->orderBy('project_id')->get();
-            $pdf = PDF::loadView('pdf.rapport', compact('tasks','user','monthString'));
             
             $path = public_path()."/rapport/".$user->name.$user->id."/";
             
             if(!File::isDirectory($path)){
                 File::makeDirectory($path,0777,true,true);
             }
-            $pdf->save($path.$year."-".$month.'.pdf');
 
             Document::create([
                             "name"=>"Rapport ".$monthString." ".$year,
-                            "url"=>"rapport/".$user->name.$user->id."/".$year."-".$month.'.pdf',
+                            "url"=>"rapport/".$user->name.$user->id."/".$year."-".$month.'.docx',
                             "year"=>$year,
                             "month"=>$month,
                             "user_id"=>$user->id]);
+                            $phpWord = new \PhpOffice\PhpWord\PhpWord();
+                            // styles 
+                            $titleStyle = array('bold'=>true,'italic'=> true, 'size'=>14, 'name'=>'Times New Roman','afterSpacing' => 0, 'Spacing'=> 0, 'cellMargin'=>0 );
+                    
+                            $fontStyle = array('italic'=> true, 'size'=>11, 'name'=>'Times New Roman','afterSpacing' => 0, 'Spacing'=> 0, 'cellMargin'=>0 );
+                            $TfontStyle = array('bold'=>true, 'italic'=> true, 'size'=>11, 'name' => 'Times New Roman', 'afterSpacing' => 3, 'Spacing'=> 0, 'cellMargin'=>0);
+                            $styleCell = array('borderTopSize'=>1 ,'borderTopColor' =>'black','borderLeftSize'=>1,'borderLeftColor' =>'black','borderRightSize'=>1,'borderRightColor'=>'black','borderBottomSize' =>1,'borderBottomColor'=>'black' ,'bgColor' =>'839FD6');
+                            $inversedStyle = array('textDirection'=>\PhpOffice\PhpWord\Style\Cell::TEXT_DIR_BTLR);
+                            $section = $phpWord->addSection();
+                            $tableStyle = array(
+                                'borderColor' => '006699',
+                                'borderSize'  => 6,
+                                'cellMargin'  => 50
+                            );
+                            $section->addText('Direction : '.$user->structurable->direction->name ,$titleStyle);
+                            $section->addText('Département : '.$user->structurable->name  ,$titleStyle);
+                            $section->addText('Nom : '.$user->name  ,$titleStyle);
+                    
+                            $section->addTextBreak(2);
+                            $section->addText('Rapport d\'activité du mois de  '.$monthString  ,array_merge(array( 'center'=>true,'underline' =>'single'),$titleStyle), array('align' => 'center'));
+                            $section->addTextBreak(3);
+                    
+                            
+                            $table = $section->addTable('myOwnTableStyle',
+                            array('borderSize'=>0, 
+                            'leftFromText'=>10,
+                            'borderColor'=>'eeeeee',
+                            'cellMargin'=>0, 
+                            'spaceBefore' => 0, 
+                            'spaceAfter' => 0,
+                            'spacing' => 0  ));
+                            $table->addRow(-0.5, array('exactHeight' => -5));
+                            
+                      
+                            // $cell = $table->addCell(5000,$inversedStyle );
+                            $cell = $table->addCell(5000,$styleCell)->addText('Projets',$TfontStyle);
+                            $cell = $table->addCell(5000,$styleCell)->addText('Tâches',$TfontStyle);
+                    
+                            
+                            for ($i = 0 ; $i < count($tasks);$i++) {
+                                if($i == 0 || ($i > 0 && $tasks[$i]->project->name !=  $tasks[$i-1]->project->name)){
+                                    $table->addRow(2.5, array('exactHeight' => 10000));
+                                    $cell = $table->addCell(5000,$TfontStyle );
+                                    $cell->addText($tasks[$i]->project->name,$TfontStyle);
+                                    $cell = $table->addCell(5000,$TfontStyle );
+                                    $cell->addText("- ".$tasks[$i]->title,$TfontStyle);
+                    
+                    
+                                }else{
+                                    $cell->addText("- ".$tasks[$i]->title,$TfontStyle);
+                                }
+                            }
+                    
+                       
+                    
+                            $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+                            $objWriter->save($path.$year."-".$month.'.docx');                
 
-            return response()->json(['url'=> "rapport/".$user->name.$user->id."/".$year."-".$month.'.pdf'],200);
+            return response()->json(['url'=> "rapport/".$user->name.$user->id."/".$year."-".$month.'.docx'],200);
 
         }else{
             return response()->json(['url'=>$document[0]->url],200);
         }
        
-
+        
 
 
     }
@@ -330,23 +385,92 @@ class TaskController extends Controller
             $fixed_tasks = Task::whereIn('project_id',$fixed)->with("sub_tasks")->with('project')->orderBy('project_id')->get();
            
             $tasks = $original->merge($fixed_tasks);
-            $pdf = PDF::loadView('pdf.rapport', compact('tasks','user','monthString'));
             
             $path = public_path()."/rapport/".$user->name.$user->id."/";
             
             if(!File::isDirectory($path)){
                 File::makeDirectory($path,0777,true,true);
             }
-            $pdf->save($path.$year."-".$month.'.pdf');
 
+           
+            $phpWord = new \PhpOffice\PhpWord\PhpWord();
+            // styles 
+            $titleStyle = array('bold'=>true,'italic'=> true, 'size'=>14, 'name'=>'Times New Roman','afterSpacing' => 0, 'Spacing'=> 0, 'cellMargin'=>0 );
+    
+            $fontStyle = array('italic'=> true, 'size'=>11, 'name'=>'Times New Roman','afterSpacing' => 0, 'Spacing'=> 0, 'cellMargin'=>0 );
+            $TfontStyle = array('bold'=>true, 'italic'=> true, 'size'=>11, 'name' => 'Times New Roman', 'afterSpacing' => 3, 'Spacing'=> 0, 'cellMargin'=>0);
+            $styleCell = array('borderTopSize'=>1 ,'borderTopColor' =>'black','borderLeftSize'=>1,'borderLeftColor' =>'black','borderRightSize'=>1,'borderRightColor'=>'black','borderBottomSize' =>1,'borderBottomColor'=>'black' ,'bgColor' =>'839FD6');
+            $inversedStyle = array('textDirection'=>\PhpOffice\PhpWord\Style\Cell::TEXT_DIR_BTLR);
+            $section = $phpWord->addSection();
+            $tableStyle = array(
+                'borderColor' => '006699',
+                'borderSize'  => 6,
+                'cellMargin'  => 50
+            );
+            $section->addText('Direction : '.$user->structurable->direction->name ,$titleStyle);
+            $section->addText('Département : '.$user->structurable->name  ,$titleStyle);
+            $section->addText('Nom : '.$user->name  ,$titleStyle);
+    
+            $section->addTextBreak(2);
+            $section->addText('Rapport d\'activité du mois de  '.$monthString  ,array_merge(array( 'center'=>true,'underline' =>'single'),$titleStyle), array('align' => 'center'));
+            $section->addTextBreak(3);
+    
+            
+            $table = $section->addTable('myOwnTableStyle',
+            array('borderSize'=>0, 
+            'leftFromText'=>10,
+            'borderColor'=>'eeeeee',
+            'cellMargin'=>0, 
+            'spaceBefore' => 0, 
+            'spaceAfter' => 0,
+            'spacing' => 0  ));
+            $table->addRow(-0.5, array('exactHeight' => -5));
+            
+        
+            // $cell = $table->addCell(5000,$inversedStyle );
+            $cell = $table->addCell(5000,$styleCell);
+            $cell->addText(' ');
+            $cell->addText('Projets',$TfontStyle);
+            $cell = $table->addCell(5000,$styleCell);
+            $cell->addText(' ');
+            $cell->addText('Tâches',$TfontStyle);
+          
+    
+            
+            for ($i = 0 ; $i < count($tasks);$i++) {
+                if($i == 0 || ($i > 0 && $tasks[$i]->project->name !=  $tasks[$i-1]->project->name)){
+                    $cell->addText(' ');
+
+                    $table->addRow(2.5, array('exactHeight' => 10000));
+                    $cell = $table->addCell(5000,$TfontStyle );
+                    $cell->addText(' ');
+                    $cell->addText($tasks[$i]->project->name,$TfontStyle);
+                    $cell->addText(' ');
+
+                    $cell = $table->addCell(5000,$TfontStyle );
+                    $cell->addText(' ');
+
+                    $cell->addText("- ".$tasks[$i]->title,$TfontStyle);
+    
+    
+                }else{
+                    $cell->addText("- ".$tasks[$i]->title,$TfontStyle);
+                }
+            }
+    
+        
+    
+            $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+            $objWriter->save($path.$year."-".$month.'.docx');   
             Document::create([
-                            "name"=>"Rapport ".$monthString." ".$year,
-                            "url"=>"rapport/".$user->name.$user->id."/".$year."-".$month.'.pdf',
-                            "year"=>$year,
-                            "month"=>$month,
-                            "user_id"=>$user->id]);
+                "name"=>"Rapport ".$monthString." ".$year,
+                "url"=>"rapport/".$user->name.$user->id."/".$year."-".$month.'.docx',
+                "year"=>$year,
+                "month"=>$month,
+                "user_id"=>$user->id]);
 
-            return response()->json(['url'=> "rapport/".$user->name.$user->id."/".$year."-".$month.'.pdf'],200);
+
+            return response()->json(['url'=> "rapport/".$user->name.$user->id."/".$year."-".$month.'.docx'],200);
 
         }else{
             return response()->json(['url'=>$document[0]->url],200);
@@ -506,6 +630,54 @@ class TaskController extends Controller
 
         return response()->json(["data" => $data],200);
         
+    }
+    public function search(Request $request){
+        $rapports = [];
+        $tasks = [];
+        $users = [];
+        $projects = [];
+        if($request['keyword'] == ''){
+            return response()->json(['rapports'=>$rapports,'tasks'=>$tasks,'users'=>$users,'projects'=>$projects],200);
+        }
+        if($request['filter'] == 'documents'){
+            $rapports = Auth::user()->documents()
+                    ->where('name','like','%'.$request['keyword'].'%')
+                    ->orWhere('year','like','%'.$request['keyword'].'%')
+                    ->get();
+
+        }else if($request['filter'] == 'tasks'){
+          $tasks =  Auth::user()->tasks()
+                    ->where('title','like','%'.$request['keyword'].'%')
+                    ->orWhere('description','like','%'.$request['keyword'].'%')
+                    ->with([
+                        'users'=>function($query){
+                            $query->select('users.id','users.name');
+                        },
+                        'project'=>function($query){
+                            $query->select('projects.id','projects.name');
+                        }
+                    ])
+                    ->orderBy('priority')
+                    ->get();
+        }else if($request['filter'] == 'personnes'){
+            $users = User::where('structurable_id',Auth::user()->structurable_id)
+                   ->where(function($query) use ($request){
+                      return $query->where('name','like','%'.$request['keyword'].'%')
+                       ->orWhere('email','like','%'.$request['keyword'].'%');
+                     })
+                    ->get();
+        }else if($request['filter'] == 'projets'){
+            $projects = Project::where('departement_id',Auth::user()->structurable_id)
+                        ->where(function($query)  use ($request){
+                            return $query->where('name','like','%'.$request['keyword'].'%');
+                        })
+                        ->get();
+        }
+        return response()->json(['rapports'=>$rapports,'tasks'=>$tasks,'users'=>$users,'projects'=>$projects],200);
+
+
+
+
     }
     public function show(Task $task)
     {
