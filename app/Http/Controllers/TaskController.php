@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Carbon\Carbon;
@@ -122,16 +123,38 @@ class TaskController extends Controller
     }
     public function fetch_initial_data(Request $request){
         $departement = Auth::user()->structurable;
-        $users =Auth::user()->role_id == 2 ?  $departement->users : $departement->users()->where('role_id','<>',2)->get();
-        $tasks = DB::table('tasks')
-                ->join('task_user','task_user.task_id','=','tasks.id')
-                ->join('users','users.id','=','task_user.user_id')
-                ->where('users.structurable_id',$departement->id)
-                ->whereIn('tasks.status',array('À FAIRE','EN RETARD'))
-                ->select('tasks.*')
-                ->distinct()
-                ->get();
-        return response()->json(["projects"=>$departement->projects,"users"=>$users,"tasks"=>$tasks],200);
+        if(Auth::user()->role->name == "Directeur"){
+            $projects = new Collection();
+            $users = new Collection();
+            foreach ($departement->departements as $dept) {
+              $projects =  $projects->merge($dept->projects);
+              $users = $users->merge($dept->users);  
+            }
+            
+            $tasks = DB::table('tasks')
+                    ->join('task_user','task_user.task_id','=','tasks.id')
+                    ->join('users','users.id','=','task_user.user_id')
+                    ->whereIn('users.structurable_id',$departement->departements->pluck('id'))
+                    ->whereIn('tasks.status',array('À FAIRE','EN RETARD'))
+                    ->select('tasks.*')
+                    ->distinct()
+                    ->get();
+
+            return response()->json(["projects"=>$projects,"users"=>$users,"tasks"=>$tasks],200);
+
+        }else{
+
+            $users =Auth::user()->role_id == 2 ?  $departement->users : $departement->users()->where('role_id','<>',2)->get();
+            $tasks = DB::table('tasks')
+                    ->join('task_user','task_user.task_id','=','tasks.id')
+                    ->join('users','users.id','=','task_user.user_id')
+                    ->where('users.structurable_id',$departement->id)
+                    ->whereIn('tasks.status',array('À FAIRE','EN RETARD'))
+                    ->select('tasks.*')
+                    ->distinct()
+                    ->get();
+            return response()->json(["projects"=>$departement->projects,"users"=>$users,"tasks"=>$tasks],200);
+        }
     }
 
     /**
