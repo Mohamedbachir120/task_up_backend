@@ -122,7 +122,7 @@ class TaskController extends Controller
     }
     public function fetch_initial_data(Request $request){
         $departement = Auth::user()->structurable;
-        $users = $departement->users;
+        $users =Auth::user()->role_id == 2 ?  $departement->users : $departement->users()->where('role_id','<>',2)->get();
         $tasks = DB::table('tasks')
                 ->join('task_user','task_user.task_id','=','tasks.id')
                 ->join('users','users.id','=','task_user.user_id')
