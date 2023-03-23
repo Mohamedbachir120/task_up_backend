@@ -302,6 +302,8 @@ class TaskController extends Controller
                             $fontStyle = array('italic'=> true, 'size'=>11, 'name'=>'Times New Roman','afterSpacing' => 0, 'Spacing'=> 0, 'cellMargin'=>0 );
                             $TfontStyle = array('bold'=>true, 'italic'=> true, 'size'=>11, 'name' => 'Times New Roman', 'afterSpacing' => 3, 'Spacing'=> 0, 'cellMargin'=>0);
                             $styleCell = array('borderTopSize'=>1 ,'borderTopColor' =>'black','borderLeftSize'=>1,'borderLeftColor' =>'black','borderRightSize'=>1,'borderRightColor'=>'black','borderBottomSize' =>1,'borderBottomColor'=>'black' ,'bgColor' =>'839FD6');
+                            $styleCellBody = array('borderTopSize'=>1 ,'borderTopColor' =>'black','borderLeftSize'=>1,'borderLeftColor' =>'black','borderRightSize'=>1,'borderRightColor'=>'black','borderBottomSize' =>1,'borderBottomColor'=>'black' );
+
                             $inversedStyle = array('textDirection'=>\PhpOffice\PhpWord\Style\Cell::TEXT_DIR_BTLR);
                             $section = $phpWord->addSection();
                             $tableStyle = array(
@@ -337,9 +339,9 @@ class TaskController extends Controller
                             for ($i = 0 ; $i < count($tasks);$i++) {
                                 if($i == 0 || ($i > 0 && $tasks[$i]->project->name !=  $tasks[$i-1]->project->name)){
                                     $table->addRow(2.5, array('exactHeight' => 10000));
-                                    $cell = $table->addCell(5000,$TfontStyle );
+                                    $cell = $table->addCell(5000,$styleCellBody );
                                     $cell->addText($tasks[$i]->project->name,$TfontStyle);
-                                    $cell = $table->addCell(5000,$TfontStyle );
+                                    $cell = $table->addCell(5000,$styleCellBody );
                                     $cell->addText("- ".$tasks[$i]->title,$TfontStyle);
                     
                     
@@ -400,10 +402,12 @@ class TaskController extends Controller
             $fontStyle = array('italic'=> true, 'size'=>11, 'name'=>'Times New Roman','afterSpacing' => 0, 'Spacing'=> 0, 'cellMargin'=>0 );
             $TfontStyle = array('bold'=>true, 'italic'=> true, 'size'=>11, 'name' => 'Times New Roman', 'afterSpacing' => 3, 'Spacing'=> 0, 'cellMargin'=>0);
             $styleCell = array('borderTopSize'=>1 ,'borderTopColor' =>'black','borderLeftSize'=>1,'borderLeftColor' =>'black','borderRightSize'=>1,'borderRightColor'=>'black','borderBottomSize' =>1,'borderBottomColor'=>'black' ,'bgColor' =>'839FD6');
+            $styleCellBody = array('borderTopSize'=>1 ,'borderTopColor' =>'black','borderLeftSize'=>1,'borderLeftColor' =>'black','borderRightSize'=>1,'borderRightColor'=>'black','borderBottomSize' =>1,'borderBottomColor'=>'black' );
+           
             $inversedStyle = array('textDirection'=>\PhpOffice\PhpWord\Style\Cell::TEXT_DIR_BTLR);
             $section = $phpWord->addSection();
             $tableStyle = array(
-                'borderColor' => '006699',
+                'borderColor' => 'black',
                 'borderSize'  => 6,
                 'cellMargin'  => 50
             );
@@ -417,9 +421,9 @@ class TaskController extends Controller
     
             
             $table = $section->addTable('myOwnTableStyle',
-            array('borderSize'=>0, 
+            array('borderSize'=>3, 
             'leftFromText'=>10,
-            'borderColor'=>'eeeeee',
+            'borderColor'=>'black',
             'cellMargin'=>0, 
             'spaceBefore' => 0, 
             'spaceAfter' => 0,
@@ -442,12 +446,12 @@ class TaskController extends Controller
                     $cell->addText(' ');
 
                     $table->addRow(2.5, array('exactHeight' => 10000));
-                    $cell = $table->addCell(5000,$TfontStyle );
+                    $cell = $table->addCell(5000,$styleCellBody );
                     $cell->addText(' ');
                     $cell->addText($tasks[$i]->project->name,$TfontStyle);
                     $cell->addText(' ');
 
-                    $cell = $table->addCell(5000,$TfontStyle );
+                    $cell = $table->addCell(5000,$styleCellBody );
                     $cell->addText(' ');
 
                     $cell->addText("- ".$tasks[$i]->title,$TfontStyle);
