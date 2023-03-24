@@ -5,7 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Auth;
-class IsChefDepartement
+
+class isDirecteur
 {
     /**
      * Handle an incoming request.
@@ -16,7 +17,7 @@ class IsChefDepartement
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::user()->role->name != "Chef de département" && Auth::user()->role->name != "Directeur"){
+        if(Auth::user()->role->name != "Directeur"){
             return response()->json(["success"=>false,"message"=>"unauthorized"],401);
         }
         return $next($request);

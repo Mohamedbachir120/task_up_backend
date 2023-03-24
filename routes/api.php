@@ -51,13 +51,17 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
      Route::get('/get_month_task','getMonthTask');
      Route::get('/project_tasks/{id}','project_tasks');
      Route::get('/perfomances','perfomances');
-     Route::get('/task_per_department','TaskPerDepartment')->middleware('isChefDepartment');
+     Route::get('/task_per_department_status','TaskPerDepartmentStatus')->middleware('isChefDepartment');
+     Route::get('/task_per_direction_status','TaskPerDirectionStatus')->middleware('isDirecteur');
+     
+     
      Route::get('/task_per_project','TaskPerProject')->middleware('isChefDepartment');
      Route::get('/task_per_personne','TaskPerPersonne')->middleware('isChefDepartment');
+
      Route::get('/search','search');
 
      
-
+    Route::get('/task_per_department','TaskPerDepartement')->middleware('isDirecteur');
 
 });
 Route::controller(DocumentController::class)->middleware('auth:sanctum')->group(function(){

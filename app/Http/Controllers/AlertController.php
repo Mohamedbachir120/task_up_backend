@@ -14,7 +14,7 @@ class AlertController extends Controller
      */
     public function index(Request $request)
     {
-        $alerts = Auth::user()->alerts;
+        $alerts = Auth::user()->alerts()->orderBy('id','desc')->get();
 
         return response()->json(['alerts'=>$alerts]);
     }
