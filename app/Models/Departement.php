@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Direction;
 use App\Models\Project;
+use App\Models\Invitation;
+use App\Models\Step;
+
 
 class Departement extends Model
 {
@@ -25,4 +28,10 @@ class Departement extends Model
         return $this->hasMany(Project::class,'departement_id');
     }
 
+    public function invitations(){
+        return $this->hasMany(Invitation::class);
+    }
+    public function steps(){
+        return $this->hasMany(Step::class);
+    }
 }
