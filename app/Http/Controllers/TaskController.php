@@ -742,28 +742,84 @@ class TaskController extends Controller
                     ->get();
 
         }else if($request['filter'] == 'tasks'){
-          $tasks =  Auth::user()->tasks()
-                    ->where('title','like','%'.$request['keyword'].'%')
-                    ->orWhere('description','like','%'.$request['keyword'].'%')
-                    ->with([
-                        'users'=>function($query){
-                            $query->select('users.id','users.name');
-                        },
-                        'project'=>function($query){
-                            $query->select('projects.id','projects.name');
-                        }
-                    ])
-                    ->orderBy('priority')
-                    ->get();
+        $role = Auth::user()->role->name;
+            $tasks = [];
+            
+            if($role == "Directeur")  {
+                
+                $projects =  Project::whereIn('departement_id',Auth::user()->structurable->departements->pluck('id'))->get()->pluck('id') ;
+                $tasks =     
+                  Task::whereIn('project_id',$projects)
+                  
+                  ->where(function($query) use ($request){
+                    return  $query->where('title','like','%'.$request['keyword'].'%')
+                   ->orWhere('description','like','%'.$request['keyword'].'%');
+
+                  })
+                ->with([
+                    'users'=>function($query){
+                        $query->select('users.id','users.name');
+                    },
+                    'project'=>function($query){
+                        $query->select('projects.id','projects.name');
+                    }
+                ])
+                ->orderBy('priority')
+                ->get();
+            }        
+            else if($role == "Chef de département"){
+                $projects =  Project::where('departement_id',Auth::user()->structurable_id)->get()->pluck('id') ;
+               
+                Task::whereIn('project_id',$projects)
+                  
+                ->where(function($query) use ($request){
+                  return  $query->where('title','like','%'.$request['keyword'].'%')
+                 ->orWhere('description','like','%'.$request['keyword'].'%');
+
+                })
+                ->with([
+                    'users'=>function($query){
+                        $query->select('users.id','users.name');
+                    },
+                    'project'=>function($query){
+                        $query->select('projects.id','projects.name');
+                    }
+                ])
+                ->orderBy('priority')
+                ->get();
+            }
+            else{
+            $task = Auth::user()->tasks()
+            ->where('title','like','%'.$request['keyword'].'%')
+            ->orWhere('description','like','%'.$request['keyword'].'%')
+            ->with([
+                'users'=>function($query){
+                    $query->select('users.id','users.name');
+                },
+                'project'=>function($query){
+                    $query->select('projects.id','projects.name');
+                }
+            ])
+            ->orderBy('priority')
+            ->get();
+            }
+                   
         }else if($request['filter'] == 'personnes'){
-            $users = User::where('structurable_id',Auth::user()->structurable_id)
-                   ->where(function($query) use ($request){
+            $users = User::where(function($query) use ($request){
                       return $query->where('name','like','%'.$request['keyword'].'%')
                        ->orWhere('email','like','%'.$request['keyword'].'%');
                      })
                     ->get();
         }else if($request['filter'] == 'projets'){
-            $projects = Project::where('departement_id',Auth::user()->structurable_id)
+            $role = Auth::user()->role->name;
+            $projects = $role == "Directeur"?  
+                        Project::whereIn('departement_id',Auth::user()->structurable->departements->pluck('id'))
+                        ->where(function($query)  use ($request){
+                            return $query->where('name','like','%'.$request['keyword'].'%');
+                        })
+                        ->get()  
+            
+                        : Project::where('departement_id',Auth::user()->structurable_id)
                         ->where(function($query)  use ($request){
                             return $query->where('name','like','%'.$request['keyword'].'%');
                         })
