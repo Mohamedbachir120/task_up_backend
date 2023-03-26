@@ -93,6 +93,6 @@ Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(f
 
 
 Route::controller(CollaborationController::class)->middleware('auth:sanctum')->group(function(){
-    
+    Route::get('/collaboration','index');
     Route::post('/collaboration','store')->middleware('isChefDepartment');
 });

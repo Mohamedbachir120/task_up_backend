@@ -19,7 +19,9 @@ class CollaborationController extends Controller
      */
     public function index()
     {
-        //
+        $departement = Auth::user()->structurable;
+
+        return response()->json($departement->collaborations,200);
     }
 
     /**
