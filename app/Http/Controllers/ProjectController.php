@@ -19,10 +19,18 @@ class ProjectController extends Controller
         
     }
     public function department_projects()
-    {
-        $departement = Auth::user()->structurable;
+    {   
+        if(Auth::user()->role->name != "Directeur"){
 
-        return response()->json(["data"=>$departement->projects],200);
+            $departement = Auth::user()->structurable;
+    
+            return response()->json(["data"=>$departement->projects],200);
+        }else {
+
+            $projects = Project::whereIn('departement_id',Auth::user()->structurable->departements->pluck('id'))->get();
+    
+            return response()->json(["data"=>$projects],200);
+        }
         
     }
 
@@ -43,10 +51,10 @@ class ProjectController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {   
         $project = Project::create([
             'name'=>$request["name"],
-            "departement_id"=> Auth::user()->structurable_id,
+            "departement_id"=> $request['departement'] ?? Auth::user()->structurable_id,
             "is_fixed"=>$request["is_fixed"]
         ]);
         return response()->json(["success"=>true,"message"=>"Project created successfully"],200);

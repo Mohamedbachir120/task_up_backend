@@ -34,6 +34,13 @@ Route::post('/auth/refresh',[AuthController::class,'refresh']);
 
 Route::get('/departements',[DepartementController::class,'index']);
 
+
+
+Route::controller(DepartementController::class)->middleware('auth:sanctum')->group(function(){
+    Route::get('/direction_departements','direction_departements')->middleware('isDirecteur');
+});
+
+
 Route::controller(TaskController::class)->middleware('auth:sanctum')->group(function(){
 
      Route::post('/task','store');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Departement;
 use Illuminate\Http\Request;
+use Auth;
 
 class DepartementController extends Controller
 {
@@ -16,7 +17,11 @@ class DepartementController extends Controller
     {
         return response()->json(Departement::with('direction')->get(),200);
     }
+    public function direction_departements(){
 
+        return response()->json(Auth::user()->structurable->departements,200);
+
+    }
     /**
      * Show the form for creating a new resource.
      *
