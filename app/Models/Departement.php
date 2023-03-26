@@ -8,6 +8,7 @@ use App\Models\Direction;
 use App\Models\Project;
 use App\Models\Invitation;
 use App\Models\Step;
+use App\Models\Collaboration;
 
 
 class Departement extends Model
@@ -33,5 +34,8 @@ class Departement extends Model
     }
     public function steps(){
         return $this->hasMany(Step::class);
+    }
+    public function collaborations(){
+        return $this->belongsToMany(Collaboration::class);
     }
 }

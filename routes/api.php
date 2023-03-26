@@ -11,6 +11,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\ObjectifController;
+use App\Http\Controllers\CollaborationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -88,4 +89,10 @@ Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(f
 
     Route::get("/department_projects","department_projects");
     Route::post('/project' ,'store');
+});
+
+
+Route::controller(CollaborationController::class)->middleware('auth:sanctum')->group(function(){
+    
+    Route::post('/collaboration','store')->middleware('isChefDepartment');
 });

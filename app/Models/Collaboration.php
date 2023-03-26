@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Invitation;
 use App\Models\Step;
 use App\Models\User;
-
+use App\Models\Departement;
 
 class Collaboration extends Model
 {
@@ -22,5 +22,8 @@ class Collaboration extends Model
     }
     public function created_by(){
         return $this->belongsTo(User::class,'created_by');
+    }
+    public function departements(){
+        return $this->belongsToMany(Departement::class);
     }
 }

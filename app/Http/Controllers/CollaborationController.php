@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Collaboration;
 use Illuminate\Http\Request;
+use App\Events\TaskAffected;
+use Auth;
+use App\Models\Departement;
+use App\Models\Invitation;
+use App\Models\User;
 
 class CollaborationController extends Controller
 {
@@ -36,6 +41,29 @@ class CollaborationController extends Controller
     public function store(Request $request)
     {
         //
+        $collaboration = Collaboration::create([
+            "created_by"=>Auth::user()->id,
+            "topic"=>$request['topic'],
+            "description"=>$request['description']
+        ]);
+        $collaboration->departements()->attach(Auth::user()->structurable->id);
+        $departements = Departement::whereIn('id', $request['members'])->get();
+        foreach($departements as $dep){
+            if($dep->id != Auth::user()->structurable->id){
+
+                Invitation::create([
+                    "collaboration_id"=>$collaboration->id,
+                    "departement_id"=>$dep->id
+                ]);
+                $user = User::where('structurable_id',$dep->id )->where('role_id',2)->first();
+                TaskAffected::dispatch($user->id,"Invitation de collaboration",
+                Auth::user()->name." Souhaite vous inviter à rejoindre  ".$collaboration->topic);
+            }
+
+
+        }
+
+        return response()->json(["success"=>true,"message"=>" collaboration created successfully"],200);
     }
 
     /**
