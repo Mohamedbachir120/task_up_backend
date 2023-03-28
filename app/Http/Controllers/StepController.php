@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Step;
 use Illuminate\Http\Request;
+use App\Models\Collaboration;
+use Auth;
+use App\Models\Departement;
 
 class StepController extends Controller
 {
@@ -34,10 +37,35 @@ class StepController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
-    }
+    {   
+        $collaboration = Collaboration::find($request["collaboration"]);
+        $step = Step::create([
+            'title'=>$request['title'],
+            'description'=>$request['description'],
+            'order'=>$collaboration->steps->count() == 0 ? 1 : $collaboration->steps->count() +1 ,
+            'due_date'=>$request["due_date"],
+            'collaboration_id'=>$request['collaboration'],
+            'departement_id'=>$request['departement'],
+            'dependance_id'=>$request['dependance'],
+        ]); 
+        return response()->json([
+            'success'=>true,
+            'message'=>"step created successfully"
+        ]);
 
+
+
+    }
+    public function initialQueryStep(Request $request,$id){
+        $collaboration = Collaboration::find($id);
+        
+        return response()->json([
+            'steps'=>$collaboration->steps()->with('departement')->get(),
+            'departements'=>$collaboration->departements
+        ],200);
+
+
+    }
     /**
      * Display the specified resource.
      *

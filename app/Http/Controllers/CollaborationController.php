@@ -67,6 +67,7 @@ class CollaborationController extends Controller
 
         return response()->json(["success"=>true,"message"=>" collaboration created successfully"],200);
     }
+    
 
     /**
      * Display the specified resource.
@@ -74,9 +75,14 @@ class CollaborationController extends Controller
      * @param  \App\Models\Collaboration  $collaboration
      * @return \Illuminate\Http\Response
      */
-    public function show(Collaboration $collaboration)
+    public function show($id)
     {
-        //
+        $collaboration = Collaboration::find($id);
+        return response()->json([
+            "collaboration" => $collaboration,
+            "departements" => $collaboration->departements,
+            "steps"=> $collaboration->steps
+        ],200);
     }
 
     /**

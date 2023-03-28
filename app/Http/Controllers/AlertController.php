@@ -18,6 +18,8 @@ class AlertController extends Controller
 
         return response()->json(['alerts'=>$alerts]);
     }
+    
+
 
     /**
      * Show the form for creating a new resource.

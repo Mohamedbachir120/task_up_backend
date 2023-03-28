@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Invitation;
 use Illuminate\Http\Request;
+use Auth;
+use App\Events\TaskAffected;
 
 class InvitationController extends Controller
 {
@@ -14,8 +16,34 @@ class InvitationController extends Controller
      */
     public function index()
     {
-        //
+        $departement = Auth::user()->structurable;
+
+        return response()->json($departement->invitations()
+                        ->where('status','PENDING')
+                        ->with('collaboration.created_by')->get(),200);
     }
+
+    public function change_status(Request $request,$id){
+
+        $invitation = Invitation::find($id);
+        $invitation->status = $request['status'];
+        $collaboration = $invitation->collaboration;
+        if($request['status'] == 'ACCEPTED'){
+            $collaboration->departements()->attach(Auth::user()->structurable_id);
+            TaskAffected::dispatch($collaboration->created_by,
+            "Invitation Accepté",Auth::user()->name." A rejoint votre collaboration ".$collaboration->topic);
+        }else{
+            TaskAffected::dispatch($collaboration->created_by,
+            "Invitation rejeté",Auth::user()->name." A rejeté votre invitation ".$collaboration->topic);
+        }
+
+
+
+        $invitation->save();
+        return response()->json(["success" => true,'message' =>"Status updated Successfully"],200);
+
+    } 
+    
 
     /**
      * Show the form for creating a new resource.

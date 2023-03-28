@@ -12,6 +12,10 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\ObjectifController;
 use App\Http\Controllers\CollaborationController;
+use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\StepController;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -94,5 +98,23 @@ Route::controller(ProjectController::class)->middleware('auth:sanctum')->group(f
 
 Route::controller(CollaborationController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/collaboration','index');
+    Route::get('/collaboration/{id}','show');
     Route::post('/collaboration','store')->middleware('isChefDepartment');
+
+});
+
+Route::controller(InvitationController::class)->middleware('auth:sanctum')->group(function(){
+
+    Route::get('/invitation','index')->middleware('isChefDepartment');
+    Route::post('/change_invitation_status/{id}','change_status')->middleware('isChefDepartment');
+
+    
+
+});
+
+Route::controller(StepController::class)->middleware('auth:sanctum')->group(function(){
+
+     Route::post('/step','store')->middleware('isChefDepartment');
+     Route::get('/initial_data_step/{id}','initialQueryStep')->middleware('isChefDepartment');   
+
 });
